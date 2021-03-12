@@ -23,7 +23,23 @@
  * */
 int is_complete_request(const char *request)
 {
-    return 0;
+    char *end_of_header_seq = "\r\n\r\n";
+
+    int request_len = strlen(request);
+
+    if (
+        request[request_len - 4] == end_of_header_seq[0] &&
+        request[request_len - 3] == end_of_header_seq[1] &&
+        request[request_len - 2] == end_of_header_seq[2] &&
+        request[request_len - 1] == end_of_header_seq[3])
+    {
+        return 1; //Complete request
+    }
+
+    // printf("End of header sequence (figurative): %d, %d, %d, %d\n", end_of_header_seq[0], end_of_header_seq[1], end_of_header_seq[2], end_of_header_seq[3]);
+    // printf("Request: %d, %d, %d, %d\n", request[request_len - 4], request[request_len - 3], request[request_len - 2], request[request_len - 1]);
+
+    return 0; //Incomplete request
 }
 
 /* Parse an HTTP request, and copy each parsed value into the
@@ -41,7 +57,7 @@ int is_complete_request(const char *request)
 int parse_request(const char *request, char *method,
                   char *hostname, char *port, char *uri)
 {
-    return 0;
+    return is_complete_request(request);
 }
 
 int main()
