@@ -1,0 +1,50 @@
+Part 1: no concurrency
+1. Show the output from the ps command.
+    mrc621@hornet:~/cs324/ConcurrencyExample$ ps -Lo user,pid,ppid,nlwp,lwp,state,ucmd -C echoserveri | grep ^username\\\|mrc621
+    mrc621    6167  1982    1  6167 S echoserveri
+
+2. From the ps output, how many processes and how many threads are running, and why?  Use the PID and LWP to identify different threads or processes.
+    1 processes, 1 thread - Because this server is not concurrent in any way, so it can only handle one connection at a time
+
+3. Enter "Ctrl-c" on the window in which "nc" was first executed to interrupt it.  What happens to the "nc" processes in the other windows?
+    The next "nc" process gets the echo back from the server, while the third process is still waiting
+
+Part 2: Process-based Concurrency
+4.Show the output from the ps command.
+    mrc621@hornet:~/cs324/ConcurrencyExample$ ps -Lo user,pid,ppid,nlwp,lwp,state,ucmd -C echoserverp | grep ^username\\\|mrc621
+    mrc621    7539  1982    1  7539 S echoserverp
+    mrc621    7557  7539    1  7557 S echoserverp
+    mrc621    7563  7539    1  7563 S echoserverp
+    mrc621    7568  7539    1  7568 S echoserverp
+
+5. From the ps output, how many processes and how many threads are running, and why?  Use the PID and LWP to identify different threads or processes.
+    4 processes, with a thread each - Because we fork to be able handle messages concurrency on unique processes?
+
+Part 3: Simple Thread-based Concurrency
+6. Show the output from the ps command.
+    mrc621@hornet:~/cs324/ConcurrencyExample$ ps -Lo user,pid,ppid,nlwp,lwp,state,ucmd -C echoservert | grep ^username\\\|mrc621
+    mrc621    7894  1982    4  7894 S echoservert
+    mrc621    7894  1982    4  7903 S echoservert
+    mrc621    7894  1982    4  7911 S echoservert
+    mrc621    7894  1982    4  7920 S echoservert
+
+7. From the ps output, how many processes and how many threads are running, and why?  Use the PID and LWP to identify different threads or processes.
+    1 process, 4 threads - Because we only use one process now and spin up the threads we need as we need them
+
+Part 4: Threadpool-based Concurrency
+8. Show the output from the ps command.
+    mrc621@hornet:~/cs324/ConcurrencyExample$ ps -Lo user,pid,ppid,nlwp,lwp,state,ucmd -C echoservert_pre | grep ^username\\\|mrc621
+    mrc621    8551  1982   11  8551 S echoservert_pre
+    mrc621    8551  1982   11  8552 S echoservert_pre
+    mrc621    8551  1982   11  8553 S echoservert_pre
+    mrc621    8551  1982   11  8554 S echoservert_pre
+    mrc621    8551  1982   11  8555 S echoservert_pre
+    mrc621    8551  1982   11  8556 S echoservert_pre
+    mrc621    8551  1982   11  8557 S echoservert_pre
+    mrc621    8551  1982   11  8558 S echoservert_pre
+    mrc621    8551  1982   11  8559 S echoservert_pre
+    mrc621    8551  1982   11  8560 S echoservert_pre
+    mrc621    8551  1982   11  8561 S echoservert_pre
+
+9. From the ps output, how many processes and how many threads are running, and why?  Use the PID and LWP to identify different threads or processes.
+    1 process, 11 threads - Because we use one process to create a predetermined number of threads for our uses?
