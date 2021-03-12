@@ -18,7 +18,7 @@ Part 2: Process-based Concurrency
     mrc621    7568  7539    1  7568 S echoserverp
 
 5. From the ps output, how many processes and how many threads are running, and why?  Use the PID and LWP to identify different threads or processes.
-    4 processes, with a thread each - Because we fork to be able handle messages concurrency on unique processes?
+    4 processes, with a thread each - Because we fork to be able handle messages concurrency on unique processes
 
 Part 3: Simple Thread-based Concurrency
 6. Show the output from the ps command.
@@ -47,42 +47,44 @@ Part 4: Threadpool-based Concurrency
     mrc621    8551  1982   11  8561 S echoservert_pre
 
 9. From the ps output, how many processes and how many threads are running, and why?  Use the PID and LWP to identify different threads or processes.
-    1 process, 11 threads - Because we use one process to create a predetermined number of threads for our uses?
+    1 process, 11 threads - Because we use one process to create a predetermined number of threads for our uses
 
 Part 5: Concurrency Review
 Name at least one pro and one con to each of the concurrent programming paradigms in this assignment.  You can use your own observations, as well as the book chapter.
 
 10. echoserverp - process-based (using fork()) concurrency
-    Pro: Simpler to program (simply create a new process to handle a new connection)
-    Con: Lots of processes (n number of processes | n = num(connections)) (which can be heavy)
+    Pro: Simpler to program (simply create a new process to handle a new connection) (clean model)
+    Con: Lots of processes (n number of processes | n = num(connections)) (which can be heavy for memory)
 
 11. echoservert - simple thread-based concurrency (threads created on the fly)
-    Pro: Only one process reguardless of how many threads
-    Con: We have to spin up each new thread on the fly when we get to the point that we need it
+    Pro: Only one process reguardless of how many threads, one creates a thread when we recieve a request
+    Con: Memory leaks can be hard to deal with (because we are not spesifically reaping threads)
 
 12. echoservert_pre - thread-based concurrency using a thread-pool
-    Pro: All threads are genereated before
-    Con: ???
+    Pro: Reduces overhead (all threads are created before listen for connections) because we reuse threads
+    Con: Structure is more complex, memory is more difucult (with sefamore and buffers)
 
 Consider the code in echoservert_pre.c for the following questions:
 13. Which statement of code represents the producer role?  How many producer threads are there?
-    sbuf_init(&sbuf, SBUFSIZE); //line:conc:pre:initsbuf
-	for (i = 0; i < NTHREADS; i++)  /* Create worker threads */ //line:conc:pre:begincreate
-		pthread_create(&tid, NULL, thread, NULL);               //line:conc:pre:endcreate
-    1 producer thread
-
-14. Which statement of code represents the consumer role?  How many consumer threads are there?
 	while (1) {
 		clientlen = sizeof(struct sockaddr_storage);
 		connfd = accept(listenfd, (struct sockaddr *) &clientaddr, &clientlen);
 		sbuf_insert(&sbuf, connfd); /* Insert connfd in buffer */
+	}
+    1 producer thread
+
+14. Which statement of code represents the consumer role?  How many consumer threads are there?
+	while (1) { 
+		int connfd = sbuf_remove(&sbuf); /* Remove connfd from buffer */ //line:conc:pre:removeconnfd
+		echo_cnt(connfd);                /* Service client */
+		close(connfd);
 	}
     10 consumer threads
     
 
 Consider the code in sbuf.c for the following questions (P() is equivalent to sem_wait() and V() is equivalent to sem_post()):
 15. On line 29, what happens when the value of slots is zero?
-    We wait until on become available
+    If the semaphore currently has the value zero, then the call blocks until either it becomes possible to perform the decrement (i.e., the semaphore value rises above zero), or a signal handler interrupts the call.
 
 16. In the case that a single consumer thread is sleeping at line 42, waiting for a non-zero value of items, what line of code will be executed by a producer to wake that thread up?
-    pthread_create()
+    sem_post(&sp->items); (from the sbuf_insert() call)
