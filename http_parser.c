@@ -179,7 +179,7 @@ int main()
         printf("req1 method: %s\n", method);
         printf("req1 hostname: %s\n", hostname);
         printf("req1 port: %s\n", port);
-        printf("req1 uri: %s\n", uri);
+        // printf("req1 uri: %s\n", uri);
     }
     else
     {
@@ -191,7 +191,7 @@ int main()
         printf("req2 method: %s\n", method);
         printf("req2 hostname: %s\n", hostname);
         printf("req2 port: %s\n", port);
-        printf("req2 uri: %s\n", uri);
+        // printf("req2 uri: %s\n", uri);
     }
     else
     {
@@ -203,7 +203,7 @@ int main()
         printf("req3 method: %s\n", method);
         printf("req3 hostname: %s\n", hostname);
         printf("req3 port: %s\n", port);
-        printf("req4 uri: %s\n", uri);
+        // printf("req4 uri: %s\n", uri);
     }
     else
     {
